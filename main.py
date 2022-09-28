@@ -19,6 +19,8 @@ SENS_ROT = 5.0
 SENS_OBS = 10.0
 SENS_TRANSL = 10.0
 
+# Desenha planetas simples
+
 
 def Desenha_planeta(pos_y, pos_x, escala, diametro, raio, corA=1.0, corB=1.0, corC=1.0):
     t = glutGet(GLUT_ELAPSED_TIME) / 1000.0
@@ -39,6 +41,8 @@ def Desenha_planeta(pos_y, pos_x, escala, diametro, raio, corA=1.0, corB=1.0, co
     glRotated(a * 20, 0, 0, 1)
     gluSphere(obj, diametro, 25, 25)
     glPopMatrix()  # Fim do push
+
+# Desenha planetas com satélites e aneis, como é o caso de Jupter
 
 
 def Desenha_planetas_com_Satelites_e_Aneis(pos_y, pos_x, escala, diametro1, diametro2, raio, raio_lua, corPlaneta=[1.0, 1.0, 1.0], corSatelite=[1.0, 1.0, 1.0], corAnel=[1.0, 1.0, 1.0]):
@@ -77,6 +81,8 @@ def Desenha_planetas_com_Satelites_e_Aneis(pos_y, pos_x, escala, diametro1, diam
 
     glPopMatrix()  # Fim do push
 
+# Desenha planetas capenas com satélite, que é o caso da Terra
+
 
 def desenha_planetas_com_Satelites(pos_y, pos_x, escala, diametro1, diametro2, raio, raio_lua, corPlaneta=[1.0, 1.0, 1.0], corSatelite=[1.0, 1.0, 1.0]):
     t = glutGet(GLUT_ELAPSED_TIME) / 1000.0
@@ -108,6 +114,8 @@ def desenha_planetas_com_Satelites(pos_y, pos_x, escala, diametro1, diametro2, r
 
     glPopMatrix()  # Fim do push
 
+# Desenha os aneis em volta do planeta
+
 
 def desenhaAnel(eixoX, eixoY):
     # Insere a matriz de transformacoes corrente na pilha para realizar as transformacoes
@@ -123,6 +131,8 @@ def desenhaAnel(eixoX, eixoY):
     glEnd()  # Fim do begin
     # Retira a matriz do topo da pilha e torna esta ultima a matriz de transformacao corrente
     glPopMatrix()  # Fim do push
+
+# Função responsável por dar o start no sistema solar completo
 
 
 def Desenha():
@@ -213,8 +223,6 @@ def Sistema_Solar():
                                            0.48, 0.40, 0.93], [0.41, 0.41, 0.41])
 
     glRasterPos2f(0, -51)
-    # glutBitmapString(GLUT_BITMAP_9_BY_15, "Cinturao de Asteroides")
-    # desenhaAsteroide(10,10)
 
 # Cria uma orbita
 
@@ -236,8 +244,9 @@ def Desenha_Orbita(pos_y, pos_x):
     glEnd()  # Fim do begin
     glPopMatrix()  # Fim do push
 
-
 # Chama a funcao para criar as orbitas de cada planeta
+
+
 def mostraOrbitas():
 
     # MERCURIO - Diametro: 4.879,4 km
@@ -330,10 +339,14 @@ def PosicionaObservador():
 def EspecificaParametrosVisualizacao():
     global angulo, fAspect
     # Especifica sistema de coordenadas de projecao
+    # Aplica operações de matriz subsequentes à pilha da matriz de projeção.
     glMatrixMode(GL_PROJECTION)
     # Inicializa sistema de coordenadas de projecao
     glLoadIdentity()
     # Especifica a projecao perspectiva(angulo,aspecto,zMin,zMax)
+    # A função gluPerspective especifica um frusto de exibição no sistema de coordenadas do mundo.
+    # Em geral, a taxa de proporção em gluPerspective deve corresponder à taxa de proporção do visor associado.
+    # Por exemplo, aspect = 2.0 significa que o ângulo de exibição do visualizador é duas vezes maior em x do que em y
     gluPerspective(angulo, fAspect, 0.5, 2000)
     # Especifica a posicao do observador e do alvo
     PosicionaObservador()
@@ -348,6 +361,7 @@ def Redimensiona(w, h):
         h = 1
 
     # Especifica as dimensoes da viewport
+    # o glViewport especifica a transformação afim de x e y de coordenadas de dispositivos normalizadas para coordenadas de janelas.
     glViewport(0, 0, w, h)
     # Calcula a correção de aspecto
     fAspect = w/h
@@ -360,22 +374,29 @@ def Redimensiona(w, h):
 def SpecialKeyboard(tecla, eixoX, eixoY):
     global angulo, rotX, rotY
     # Realiza transformacoes geometricas de rotacao (gira o objeto ao redor do vetor eixoX, eixoY, eixoZ)
-
     if tecla == GLUT_KEY_RIGHT:
+        # Se a tecla clicada for a seta right, então o objeto irá rotacionar no eixo X, adicionando +1 ao angulo
+        # A função glRotatef multiplica a matriz atual por uma matriz de rotação.
         glRotatef(rotX, 1, 0, 0)
         rotX += 1
 
     elif tecla == GLUT_KEY_LEFT:
+        # Se a tecla clicada for a seta esquerda, então o objeto irá rotacionar no eixo Y
         glRotatef(rotY, 0, 1, 0)
         rotY += 1
 
     elif tecla == GLUT_KEY_DOWN:
+        # Se a tecla clicada for a seta down, então o angulo do observador irá dominuir (ficar distante)
         if (angulo <= 150):
             angulo += 5  # diminui zoom
 
     elif tecla == GLUT_KEY_UP:
+        # Se a tecla clicada for a seta up, então o angulo do observador irá aumentar (se aproximar)
         if (angulo >= 10):
             angulo -= 5  # aumenta zoom
+
+    # Após alterar as propriedades que caracterizam o posicionamento e angulo, ele reconfigura as matrizes de
+    # de transformação e atualiza o posicionamento do observador!
     EspecificaParametrosVisualizacao()  # Modifica a visualizacao do usuario
     # Marca para exibir novamente o plano da janela atual na proxima iteracao do glutMainLoop
     glutPostRedisplay()
@@ -412,15 +433,6 @@ def GerenciaMovimento(eixoX, eixoY):
         rotY = rotY_ini - deltax/SENS_ROT
         rotX = rotX_ini - deltay/SENS_ROT
 
-    # Botao direito do mouse
-    elif (botao == GLUT_RIGHT_BUTTON):
-        deltax = x_ini - eixoX
-        deltay = y_ini - eixoY
-        # Calcula diferença
-        deltaz = deltax - deltay
-        # E modifica distancia do observador
-        obsZ = obsZ_ini + deltaz/SENS_OBS
-
     # Padrao da funcao, ja que altera a visualizacao (angulo ou distancia)
     PosicionaObservador()
     # Marca para exibir novamente o plano da janela atual na proxima iteracao do glutMainLoop
@@ -447,6 +459,7 @@ def main():
     glutDisplayFunc(Sistema_Solar_com_orbitas)
     # ??? Qual o objetivo?
     glutReshapeFunc(Redimensiona)
+
     # Define o retorno das teclas direcionais, teclado e mouse para a janela atual (callback gerado por evento)
     glutSpecialFunc(SpecialKeyboard)
     glutMouseFunc(GerenciaMouse)
