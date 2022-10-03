@@ -16,8 +16,6 @@ eixoX, eixoY, eixoZ = 0, 0, 0
 
 # Constantes utilizadas na interacao com o mouse
 SENS_ROT = 5.0
-SENS_OBS = 10.0
-SENS_TRANSL = 10.0
 
 # Desenha planetas simples
 
@@ -30,7 +28,6 @@ def Desenha_planeta(pos_y, pos_x, escala, diametro, raio, corA=1.0, corB=1.0, co
     # Serve para restringir o efeito das transformacoes ao escopo que desejamos ou lembrar da sequencia de transformacoes realizadas
     glPushMatrix()
     glRasterPos2f(0, -pos_y)
-    # glutBitmapString(GLUT_BITMAP_9_BY_15, planeta)
     glTranslated(0, -pos_y, 0)
     # Movimento de Translação
     glTranslatef((pos_x * math.cos(2.0 * 3.14 * a*raio / 100)),
@@ -132,17 +129,6 @@ def desenhaAnel(eixoX, eixoY):
     # Retira a matriz do topo da pilha e torna esta ultima a matriz de transformacao corrente
     glPopMatrix()  # Fim do push
 
-# Função responsável por dar o start no sistema solar completo
-
-
-def Desenha():
-    glDrawBuffer(GL_BACK)
-    # Limpa a janela de visualizao com a cor de fundo especificada
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
-    # desenha todos os objetos na tela
-    Sistema_Solar()
-    glutSwapBuffers()
-
 # Desenha o sistema solar e as orbitas dos planetas
 
 
@@ -167,8 +153,6 @@ def Sistema_Solar():
         mat_specular = [1.0, 1.0, 1.0, 1.0]
         high_shininess = [100.0]
 
-        glShadeModel(GL_SMOOTH)
-
         # Propriedades da fonte de luz
         glLightfv(GL_LIGHT0, GL_AMBIENT, light_ambient)
         glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse)
@@ -178,11 +162,10 @@ def Sistema_Solar():
         glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, GL_TRUE)
 
         glDisable(GL_LIGHTING)
-        glDisable(GL_LIGHT0)
 
         glPushMatrix()
         glRasterPos2f(0, 1.5)
-        # glutBitmapString(GLUT_BITMAP_9_BY_15, "Sol")
+
         qobj = gluNewQuadric()
         glColor3f(1.0, 1.0, 0.0)
         glMaterialfv(GL_FRONT, GL_AMBIENT, mat_ambient)
@@ -198,7 +181,7 @@ def Sistema_Solar():
         glEnable(GL_LIGHT0)
         glEnable(GL_DEPTH_TEST)
 
-       # MERCURIO - Diametro: 4.879,4 km
+    # MERCURIO - Diametro: 4.879,4 km
     Desenha_planeta(7, 7, 2, 0.48, 3.7, 0.74, 0.32, 0.41)
 
     # VENUS - Diametro: 12.103,6 km
@@ -441,6 +424,8 @@ def GerenciaMovimento(eixoX, eixoY):
     # Padrao da funcao, ja que altera a visualizacao (angulo ou distancia)
     PosicionaObservador()
     # Marca para exibir novamente o plano da janela atual na proxima iteracao do glutMainLoop
+    # Marque o plano normal da janela atual como precisando ser reexibido. Na próxima iteração através do glutMainLoop,
+    # o retorno de chamada de exibição da janela será chamado para reexibir o plano normal da janela
     glutPostRedisplay()
 
 
@@ -462,7 +447,6 @@ def main():
 
     # Exibe na tela o retorno da funcao chamada
     glutDisplayFunc(Sistema_Solar_com_orbitas)
-    # ??? Qual o objetivo?
     glutReshapeFunc(Redimensiona)
 
     # Define o retorno das teclas direcionais, teclado e mouse para a janela atual (callback gerado por evento)
