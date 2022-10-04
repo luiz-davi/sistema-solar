@@ -165,7 +165,6 @@ def Sistema_Solar():
 
     glPushMatrix()
     glRasterPos2f(0, 1.5)
-    # glutBitmapString(GLUT_BITMAP_9_BY_15, "Sol")
     qobj = gluNewQuadric()
     glColor3f(1.0, 1.0, 0.0)
     glMaterialfv(GL_FRONT, GL_AMBIENT, mat_ambient)
@@ -324,9 +323,10 @@ def EspecificaParametrosVisualizacao():
     global angulo, fAspect
     # Especifica sistema de coordenadas de projecao
     # Aplica operações de matriz subsequentes à pilha da matriz de projeção.
+    # prepara a matriz de projeção para receber novas multiplicações
     glMatrixMode(GL_PROJECTION)
     # Inicializa sistema de coordenadas de projecao
-    glLoadIdentity()
+    glLoadIdentity()  # faz as multiplicações com base nas npvas modificações
     # Especifica a projecao perspectiva(angulo,aspecto,zMin,zMax)
     # A função gluPerspective especifica um frusto de exibição no sistema de coordenadas do mundo.
     # Em geral, a taxa de proporção em gluPerspective deve corresponder à taxa de proporção do visor associado.
@@ -346,6 +346,9 @@ def Redimensiona(w, h):
 
     # Especifica as dimensoes da viewport
     # o glViewport especifica a transformação afim de x e y de coordenadas de dispositivos normalizadas para coordenadas de janelas.
+    # O OpenGL dimensionará automaticamente a renderização para que ela se encaixe no porta de exibição dada.
+    # Faz o mesmo para o resto de seus viewports e no final você tem uma janela com poucas renderizações diferentes,
+    # cada uma com seus próprios parâmetros. Desta forma, você pode ter quantas renderizações distintas em uma única janela/destino de renderização o que quiser
     glViewport(0, 0, w, h)
     # Calcula a correção de aspecto
     fAspect = w/h
