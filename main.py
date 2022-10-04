@@ -285,8 +285,10 @@ def Inicializa():
     rotY = 0
     rotZ = 0
     obsX = obsY = 0
-    obsZ = 150
-
+    obsZ = 1000
+    rotX = -72.8
+    rotY = 31.6
+    rotZ - 0
     # #Inicializa obj
     # inicializaObj()
 
